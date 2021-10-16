@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/html/
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hh_app
+

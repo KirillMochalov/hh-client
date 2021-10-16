@@ -1,0 +1,17 @@
+{
+  "name": "kirill/hh",
+  "authors": [
+    {
+      "name": "Kirill Mochalov",
+      "email": "kirill.mochalov.1992@gmail.com"
+    }
+  ],
+  "require": {
+
+  },
+  "autoload": {
+    "psr-4": {
+      "HhClient\\": "src/"
+    }
+  }
+}
