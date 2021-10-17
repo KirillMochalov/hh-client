@@ -4,11 +4,19 @@
 namespace HhClient;
 
 
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Client
 {
+    /**
+     * @var string
+     */
     private $access_token;
+
+    /**
+     * @var GuzzleClient
+     */
     private $http_client;
 
     /**
@@ -18,7 +26,7 @@ class Client
     public function __construct(string $access_token)
     {
         $this->access_token = $access_token;
-        $this->http_client = new \GuzzleHttp\Client([
+        $this->http_client = new GuzzleClient([
             'base_uri' => 'https://api.hh.ru',
         ]);
     }
@@ -87,11 +95,69 @@ class Client
      * @return array|null
      * @throws GuzzleException
      */
-    public function getResumes(): ?array
+    public function getResumes(int $per_page = 20, int $page = 0): ?array
     {
         $response = $this->http_client->request(
             'GET',
             '/resumes/mine',
+            [
+                'headers' => $this->getHeaders(),
+                'form_params' => [
+                    'per_page' => $per_page,
+                    'page' => $page,
+                ]
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param string $id
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getResume(string $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/resumes/$id",
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param string $id
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function deleteResume(string $id): ?array
+    {
+        $response = $this->http_client->request(
+            'DELETE',
+            "/resumes/$id",
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param string $id
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function publishResume(string $id): ?array
+    {
+        $response = $this->http_client->request(
+            'POST',
+            "/resumes/$id/publish",
             [
                 'headers' => $this->getHeaders(),
             ],
@@ -109,6 +175,41 @@ class Client
         $response = $this->http_client->request(
             'GET',
             '/areas',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getNewResumeConditions(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/resume_conditions',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param string $id
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getResumeConditions(string $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/resumes/$id/conditions",
             [
                 'headers' => $this->getHeaders(),
             ],
@@ -140,13 +241,17 @@ class Client
      * @return array|null
      * @throws GuzzleException
      */
-    public function getPhotoArtefacts(): ?array
+    public function getPhotoArtefacts(int $per_page = 20, int $page = 0): ?array
     {
         $response = $this->http_client->request(
             'GET',
             '/artifacts/photo',
             [
                 'headers' => $this->getHeaders(),
+                'form_params' => [
+                    'per_page' => $per_page,
+                    'page' => $page,
+                ]
             ],
         )->getBody()->getContents();
 
@@ -189,6 +294,74 @@ class Client
                     'description' => $description,
                     'file' => $file,
                 ]
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getSpecializations(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/specializations',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getLanguages(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/languages',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMetros(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/metro',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getLocales(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/locales',
+            [
+                'headers' => $this->getHeaders(),
             ],
         )->getBody()->getContents();
 
