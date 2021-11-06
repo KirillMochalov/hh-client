@@ -92,6 +92,8 @@ class Client
     }
 
     /**
+     * @param int $per_page
+     * @param int $page
      * @return array|null
      * @throws GuzzleException
      */
@@ -213,17 +215,17 @@ class Client
             [
                 'headers' => $this->getHeaders(),
             ],
-        )->getBody()->getContents();
+            )->getBody()->getContents();
 
         return json_decode($response, true);
     }
 
     /**
      * @param Resume $resume
-     * @return mixed
+     * @return bool
      * @throws GuzzleException
      */
-    public function createResume(Resume $resume)
+    public function createResume(Resume $resume): bool
     {
         $response = $this->http_client->request(
             'POST',
@@ -232,12 +234,34 @@ class Client
                 'headers' => $this->getHeaders(),
                 'body' => json_encode($resume),
             ],
-        )->getBody()->getContents();
+        );
 
-        return json_decode($response, true);
+        return $response->getStatusCode() == 201;
     }
 
     /**
+     * @param string $id
+     * @param array $resume
+     * @return bool
+     * @throws GuzzleException
+     */
+    public function updateResume(string $id, array $resume): bool
+    {
+        $response = $this->http_client->request(
+            'PUT',
+            "/resumes/$id",
+            [
+                'headers' => $this->getHeaders(),
+                'body' => json_encode($resume),
+            ],
+        );
+
+        return $response->getStatusCode() == 204;
+    }
+
+    /**
+     * @param int $per_page
+     * @param int $page
      * @return array|null
      * @throws GuzzleException
      */
@@ -360,6 +384,40 @@ class Client
         $response = $this->http_client->request(
             'GET',
             '/locales',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getApplicantAgreement(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/documents/applicant_agreement',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getEmployerAgreement(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/documents/employer_agreement',
             [
                 'headers' => $this->getHeaders(),
             ],

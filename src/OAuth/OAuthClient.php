@@ -5,12 +5,25 @@ namespace HhClient\OAuth;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class OAuthClient
 {
+    /**
+     * @var string
+     */
     private $client_id;
+    /**
+     * @var string
+     */
     private $client_secret;
+    /**
+     * @var string
+     */
     private $redirect_uri;
+    /**
+     * @var Client
+     */
     private $http_client;
 
     /**
@@ -43,7 +56,7 @@ class OAuthClient
     /**
      * @param string $code
      * @return OAuthResponse
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function oAuth(string $code): OAuthResponse
     {
