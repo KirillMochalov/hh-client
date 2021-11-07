@@ -32,7 +32,7 @@ class Resume implements JsonSerializable
      */
     private $birth_date;
     /**
-     * @var string|null
+     * @var array|null
      */
     private $gender;
     /**
@@ -237,17 +237,17 @@ class Resume implements JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return array|null
      */
-    public function getGender(): ?string
+    public function getGender(): ?array
     {
         return $this->gender;
     }
 
     /**
-     * @param string|null $gender
+     * @param array|null $gender
      */
-    public function setGender(?string $gender): void
+    public function setGender(?array $gender): void
     {
         $this->gender = $gender;
     }
