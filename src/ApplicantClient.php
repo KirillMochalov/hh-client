@@ -7,7 +7,7 @@ namespace HhClient;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 
-class Client
+class ApplicantClient
 {
     /**
      * @var string
@@ -20,7 +20,7 @@ class Client
     private $http_client;
 
     /**
-     * Client constructor.
+     * ApplicantClient constructor.
      * @param string $access_token
      */
     public function __construct(string $access_token)

@@ -22,7 +22,7 @@ composer install
 ```
 
 ## Авторизация  
-Для выполнения любого запроса к hh.ru нужно получить токен соискателя. Для этого создаем объект класса OAuthClient и вызываем метод getAuthenticationUrl, который вернет url для редиректа пользователя. 
+Для выполнения любого запроса к hh.ru нужно получить токен соискателя/приложения. Для получение токена соискателя создаем объект класса OAuthClient и вызываем метод getAuthenticationUrl, который вернет url для редиректа пользователя. 
 ```
 $oauth_client = new OAuthClient('%client_id%', '%client_secret%', 'http://localhost/hh');
 $redirect_url = $oauth_client->getAuthenticationUrl();
@@ -35,10 +35,10 @@ $access_token = $oauth_client->oAuth($_GET['code'])->getAccessToken();
 ```
 Полученный токен нужно сохранить в сессии или БД для дальнейшего использования.  
 
-## Использование клиента  
-Объект класса Client создается с использованием ранее полученного токена соискателя.
+## Использование клиента соискателя  
+Объект класса ApplicantClient создается с использованием ранее полученного токена соискателя.
 ```
-$hh_client = new Client($access_token);
+$hh_client = new ApplicantClient($access_token);
 ```
 ### Поиск вакансий
 ```
@@ -106,7 +106,7 @@ $client->createResume($resume);
 Часть полей заполняется элементами из справочников. Подробнее по ссылке https://github.com/hhru/api/blob/master/docs/resumes.md#create_edit  
 
 ### Справочники
-Для получения справочников применяется ряд методов класса Client.  
+Для получения справочников применяется ряд методов класса ApplicantClient.  
 getDictionaries - основные справочники;  
 getAreas - справочник регионов;  
 getSpecializations - справочник специализаций;  
@@ -114,7 +114,7 @@ getLanguages - справочник языков;
 getMetros - справочник метро;  
 getLocales - справочник локализаций резюме.  
 
-### Дополнительные методы класса Client
+### Дополнительные методы класса ApplicantClient
 getNewResumeConditions - условия полей для создания резюме;  
 getResumeConditions - условия полей для обновления резюме;  
 getApplicantAgreement - соглашение об оказании услуг по содействию в
@@ -122,11 +122,18 @@ getApplicantAgreement - соглашение об оказании услуг п
 deleteResume - удаление резюме;  
 publishResume - публикация резюме после создания.  
 
-
-## Регистрация нового соискателя
-Для регистрации пользователей используется класс UserClient. В конструктор нужно передать параметры client_id, client_secret и значение заголовка User-Agent, зарегистрированного для вашего приложения.
+## ApplicationClient (клиент приложения)
+### Получение токена приложения
+Для вызова методов класса ApplicationClient нужно получить токен приложения. Токен приложения необходимо сгенерировать 1 раз. В случае, если токен был скомпрометирован, его нужно запросить еще раз. При этом ранее выданный токен отзывается.
 ```
-$user_client = new UserClient('%client_id%', '%client_secret%', 'MyApp/1.0');
+$application_client = new ApplicationClient('%client_id%', '%client_secret%');
+$application_token = $application_client->generateApplicationToken();
+```
+
+### Регистрация нового соискателя
+Для регистрации пользователей используется класс ApplicationClient. В конструктор нужно передать параметры client_id, client_secret и токен приложения.
+```
+$application_client = new ApplicationClient('%client_id%', '%client_secret%', '%application_token%');
 ```
 Метод createUser принимает параметры: почтовый адрес (логин), имя, фамилия и отчество (необязательно).
 ```
@@ -134,7 +141,7 @@ $login = 'example@example.com';
 $first_name = 'Иван';
 $last_name = 'Иванов';
 $middle_name = 'Иванович';
-$user_client->createUser($login, $first_name, $last_name, $middle_name);
+$application_client->createUser($login, $first_name, $last_name, $middle_name);
 ```
 
 ## Требования
