@@ -1,8 +1,6 @@
 <?php
 
-
 namespace HhClient\OAuth;
-
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -80,4 +78,27 @@ class OAuthClient
         );
     }
 
+    /**
+     * @param string $refreshToken
+     * @return OAuthResponse
+     * @throws GuzzleException
+     */
+    public function refreshToken(string $refreshToken): OAuthResponse
+    {
+        $response = $this->http_client->request('POST', '/oauth/token', [
+            'form_params' => [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $refreshToken,
+            ]
+        ]);
+
+        $json = json_decode($response->getBody()->getContents(), true);
+
+        return new OAuthResponse(
+            $json['access_token'],
+            $json['token_type'],
+            $json['expires_in'],
+            $json['refresh_token']
+        );
+    }
 }
