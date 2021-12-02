@@ -430,6 +430,24 @@ class ApplicantClient
     }
 
     /**
+     * Информация о соискателе
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMe(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/me',
+            [
+                'headers' => $this->getHeaders(),
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
      * @return string[]
      */
     private function getHeaders(): array

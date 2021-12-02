@@ -135,4 +135,23 @@ class ApplicationClient
         return json_decode($response, true);
     }
 
+    /**
+     * Информация о приложении, проверка токена приложения
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMe(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/me',
+            [
+                'headers' => [
+                    'Authorization' => "Bearer $this->application_token"
+                ],
+            ],
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
 }
