@@ -125,9 +125,7 @@ class ApplicationClient
             'POST',
             '/users',
             [
-                'headers' => [
-                    'Authorization' => "Bearer $this->application_token"
-                ],
+                'headers' => $this->getHeaders(),
                 'form_params' => $body,
             ],
         )->getBody()->getContents();
@@ -146,12 +144,18 @@ class ApplicationClient
             'GET',
             '/me',
             [
-                'headers' => [
-                    'Authorization' => "Bearer $this->application_token"
-                ],
+                'headers' => $this->getHeaders(),
             ],
         )->getBody()->getContents();
 
         return json_decode($response, true);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getHeaders(): array
+    {
+        return ['Authorization' => "Bearer $this->application_token"];
     }
 }
