@@ -1,32 +1,36 @@
 <?php
 
-
 namespace HhClient;
-
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use UnexpectedValueException;
 
+/**
+ * ApplicationClient
+ * @property string $client_id
+ * @property string $client_secret
+ * @property Client $http_client
+ */
 class ApplicationClient
 {
     /**
      * @var string
      */
-    private $client_id;
+    protected $client_id;
     /**
      * @var string
      */
-    private $client_secret;
+    protected $client_secret;
     /**
      * @var Client
      */
-    private $http_client;
+    protected $http_client;
 
     /**
      * @var string|null
      */
-    private $application_token;
+    protected $application_token;
 
     /**
      * ApplicationClient constructor.

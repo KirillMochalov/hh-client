@@ -1,23 +1,26 @@
 <?php
 
-
 namespace HhClient;
-
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 
+/**
+ * ApplicantClient
+ * @property string $access_token
+ * @property Client $http_client
+ */
 class ApplicantClient
 {
     /**
      * @var string
      */
-    private $access_token;
+    protected $access_token;
 
     /**
      * @var GuzzleClient
      */
-    private $http_client;
+    protected $http_client;
 
     /**
      * ApplicantClient constructor.
