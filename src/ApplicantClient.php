@@ -35,24 +35,36 @@ class ApplicantClient
     }
 
     /**
-     * @param string $text
+     * Поиск по вакансиям
+     * https://github.com/hhru/api/blob/master/docs/vacancies.md#поиск-по-вакансиям
+     * @param array $params
      * @param int $per_page
      * @param int $page
      * @return array|null
      * @throws GuzzleException
      */
-    public function searchVacancies(string $text = '', int $per_page = 20, $page = 0): ?array
+    public function searchVacancies(array $params = [], int $per_page = 20, $page = 1): ?array
     {
+        $params['per_page'] = $per_page;
+        $params['page'] = $page;
+
+        $query = [];
+        foreach ($params as $k=>$v) {
+            if (is_string($v)) {
+                $query[] = "{$k}={$v}";
+            }
+            if (is_array($v)) {
+                foreach ($v as $vv) {
+                    $query[] = "{$k}={$vv}";
+                }
+            }
+        }
+
         $response = $this->http_client->request(
             'GET',
-            '/vacancies',
+            '/vacancies?' . implode('&',$query),
             [
-                'headers' => $this->getHeaders(),
-                'form_params' => [
-                    'per_page' => $per_page,
-                    'page' => $page,
-                    'text' => $text,
-                ]
+                'headers' => $this->getHeaders()
             ]
         )->getBody()->getContents();
 
