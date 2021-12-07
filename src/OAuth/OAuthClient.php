@@ -36,7 +36,7 @@ class OAuthClient
         $this->client_secret = $client_secret;
         $this->redirect_uri = $redirect_uri;
         $this->http_client = new Client([
-            'base_uri' => 'https://hh.ru',
+            'base_uri' => 'https://hh.ru'
         ]);
     }
 

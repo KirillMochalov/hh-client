@@ -30,7 +30,7 @@ class ApplicantClient
     {
         $this->access_token = $access_token;
         $this->http_client = new GuzzleClient([
-            'base_uri' => 'https://api.hh.ru',
+            'base_uri' => 'https://api.hh.ru'
         ]);
     }
 
@@ -53,7 +53,7 @@ class ApplicantClient
                     'page' => $page,
                     'text' => $text,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -71,7 +71,7 @@ class ApplicantClient
             "/vacancies/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -88,7 +88,7 @@ class ApplicantClient
             '/dictionaries',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -111,7 +111,7 @@ class ApplicantClient
                     'per_page' => $per_page,
                     'page' => $page,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -129,7 +129,7 @@ class ApplicantClient
             "/resumes/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -147,7 +147,7 @@ class ApplicantClient
             "/resumes/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -165,7 +165,7 @@ class ApplicantClient
             "/resumes/$id/publish",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -182,7 +182,7 @@ class ApplicantClient
             '/areas',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -199,7 +199,7 @@ class ApplicantClient
             '/resume_conditions',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -217,8 +217,8 @@ class ApplicantClient
             "/resumes/$id/conditions",
             [
                 'headers' => $this->getHeaders(),
-            ],
-            )->getBody()->getContents();
+            ]
+        )->getBody()->getContents();
 
         return json_decode($response, true);
     }
@@ -236,7 +236,7 @@ class ApplicantClient
             [
                 'headers' => $this->getHeaders(),
                 'body' => json_encode($resume),
-            ],
+            ]
         );
 
         return $response->getStatusCode() == 201;
@@ -256,7 +256,7 @@ class ApplicantClient
             [
                 'headers' => $this->getHeaders(),
                 'body' => json_encode($resume),
-            ],
+            ]
         );
 
         return $response->getStatusCode() == 204;
@@ -279,7 +279,7 @@ class ApplicantClient
                     'per_page' => $per_page,
                     'page' => $page,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -296,7 +296,7 @@ class ApplicantClient
             '/artifacts/portfolio',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -321,7 +321,7 @@ class ApplicantClient
                     'description' => $description,
                     'file' => $file,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -338,7 +338,7 @@ class ApplicantClient
             '/specializations',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -355,7 +355,7 @@ class ApplicantClient
             '/languages',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -372,7 +372,7 @@ class ApplicantClient
             '/metro',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -389,7 +389,7 @@ class ApplicantClient
             '/locales',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -406,7 +406,7 @@ class ApplicantClient
             '/documents/applicant_agreement',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -423,7 +423,7 @@ class ApplicantClient
             '/documents/employer_agreement',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -441,7 +441,7 @@ class ApplicantClient
             '/me',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);

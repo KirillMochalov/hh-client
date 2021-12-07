@@ -45,7 +45,7 @@ class ApplicationClient
         $this->application_token = $application_token;
 
         $this->http_client = new Client([
-            'base_uri' => 'https://api.hh.ru',
+            'base_uri' => 'https://api.hh.ru'
         ]);
     }
 
@@ -127,7 +127,7 @@ class ApplicationClient
             [
                 'headers' => $this->getHeaders(),
                 'form_params' => $body,
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -145,7 +145,7 @@ class ApplicationClient
             '/me',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
