@@ -204,6 +204,23 @@ class ApplicantClient
      * @return array|null
      * @throws GuzzleException
      */
+    public function getProfessionalRoles(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/professional_roles',
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
     public function getNewResumeConditions(): ?array
     {
         $response = $this->http_client->request(
