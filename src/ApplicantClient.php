@@ -23,6 +23,11 @@ class ApplicantClient
     protected $http_client;
 
     /**
+     * @var string
+     */
+    private $user_agent = '';
+
+    /**
      * ApplicantClient constructor.
      * @param string $access_token
      */
@@ -477,11 +482,23 @@ class ApplicantClient
     }
 
     /**
+     * Установить заголовок HH-User-Agent
+     * @param $user_agent
+     */
+    public function setUserAgent($user_agent)
+    {
+        $this->user_agent = $user_agent;
+    }
+
+    /**
      * @return string[]
      */
     private function getHeaders(): array
     {
-        return ['Authorization' => "Bearer $this->access_token"];
+        return [
+            'Authorization' => "Bearer $this->access_token",
+            'HH-User-Agent' => $this->user_agent
+        ];
     }
 
 }
