@@ -43,7 +43,7 @@ class ApplicantClient
      * @return array|null
      * @throws GuzzleException
      */
-    public function searchVacancies(array $params = [], int $per_page = 20, $page = 1): ?array
+    public function searchVacancies(array $params = [], int $per_page = 20, $page = 0): ?array
     {
         $params['per_page'] = $per_page;
         $params['page'] = $page;
