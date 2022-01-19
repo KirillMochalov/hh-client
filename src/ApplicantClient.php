@@ -278,11 +278,11 @@ class ApplicantClient
 
     /**
      * @param string $id
-     * @param array $resume
+     * @param Resume $resume
      * @return bool
      * @throws GuzzleException
      */
-    public function updateResume(string $id, array $resume): bool
+    public function updateResume(string $id, Resume $resume): bool
     {
         $response = $this->http_client->request(
             'PUT',
