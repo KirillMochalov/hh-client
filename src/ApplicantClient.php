@@ -210,6 +210,7 @@ class ApplicantClient
      * @param string $id
      * @param array $options
      * @return array|null
+     * @throws GuzzleException
      */
     public function publishResume(string $id, array $options = []): ?array
     {
@@ -225,6 +226,31 @@ class ApplicantClient
             "/resumes/$id/publish" . (!empty($params) ? '?' . implode('&',$params) : ''),
             [
                 'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param int $vacancy_id
+     * @param string $resume_id
+     * @param string $message
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function createNegotiations(int $vacancy_id, string $resume_id, string $message): ?array
+    {
+        $response = $this->http_client->request(
+            'POST',
+            "/negotiations",
+            [
+                'headers' => $this->getHeaders(),
+                'form_params' => [
+                    'vacancy_id' => $vacancy_id,
+                    'resume_id' => $resume_id,
+                    'message' => $message,
+                ]
             ]
         )->getBody()->getContents();
 
