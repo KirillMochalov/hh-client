@@ -95,6 +95,42 @@ class ApplicantClient
     }
 
     /**
+     * Список подходящих для отклика резюме
+     * @param int $id
+     * @return array|null
+     */
+    public function getSuitableResumes(int $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/vacancies/$id/suitable_resumes",
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Резюме, сгруппированные по возможности отклика на данную вакансию
+     * @param int $id
+     * @return array|null
+     */
+    public function getResumesByStatus(int $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/vacancies/$id/resumes_by_status",
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
      * @return array|null
      * @throws GuzzleException
      */
