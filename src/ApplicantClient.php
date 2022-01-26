@@ -208,14 +208,21 @@ class ApplicantClient
 
     /**
      * @param string $id
+     * @param array $options
      * @return array|null
-     * @throws GuzzleException
      */
-    public function publishResume(string $id): ?array
+    public function publishResume(string $id, array $options = []): ?array
     {
+        $params = [];
+        if (!empty($options)) {
+            foreach ($options as $k=>$v) {
+                $params[] = $k . '=' . $v;
+            }
+        }
+
         $response = $this->http_client->request(
             'POST',
-            "/resumes/$id/publish",
+            "/resumes/$id/publish" . (!empty($params) ? '?' . implode('&',$params) : ''),
             [
                 'headers' => $this->getHeaders(),
             ]
