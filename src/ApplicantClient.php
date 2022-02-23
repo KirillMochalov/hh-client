@@ -1,23 +1,31 @@
 <?php
 
-
 namespace HhClient;
-
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 
+/**
+ * ApplicantClient
+ * @property string $access_token
+ * @property Client $http_client
+ */
 class ApplicantClient
 {
     /**
      * @var string
      */
-    private $access_token;
+    protected $access_token;
 
     /**
      * @var GuzzleClient
      */
-    private $http_client;
+    protected $http_client;
+
+    /**
+     * @var string
+     */
+    private $user_agent = '';
 
     /**
      * ApplicantClient constructor.
@@ -27,30 +35,42 @@ class ApplicantClient
     {
         $this->access_token = $access_token;
         $this->http_client = new GuzzleClient([
-            'base_uri' => 'https://api.hh.ru',
+            'base_uri' => 'https://api.hh.ru'
         ]);
     }
 
     /**
-     * @param string $text
+     * Поиск по вакансиям
+     * https://github.com/hhru/api/blob/master/docs/vacancies.md#поиск-по-вакансиям
+     * @param array $params
      * @param int $per_page
      * @param int $page
      * @return array|null
      * @throws GuzzleException
      */
-    public function searchVacancies(string $text = '', int $per_page = 20, $page = 0): ?array
+    public function searchVacancies(array $params = [], int $per_page = 20, $page = 0): ?array
     {
+        $params['per_page'] = $per_page;
+        $params['page'] = $page;
+
+        $query = [];
+        foreach ($params as $k=>$v) {
+            if (is_string($v)) {
+                $query[] = "{$k}={$v}";
+            }
+            if (is_array($v)) {
+                foreach ($v as $vv) {
+                    $query[] = "{$k}={$vv}";
+                }
+            }
+        }
+
         $response = $this->http_client->request(
             'GET',
-            '/vacancies',
+            '/vacancies?' . implode('&',$query),
             [
-                'headers' => $this->getHeaders(),
-                'form_params' => [
-                    'per_page' => $per_page,
-                    'page' => $page,
-                    'text' => $text,
-                ]
-            ],
+                'headers' => $this->getHeaders()
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -68,7 +88,43 @@ class ApplicantClient
             "/vacancies/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Список подходящих для отклика резюме
+     * @param int $id
+     * @return array|null
+     */
+    public function getSuitableResumes(int $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/vacancies/$id/suitable_resumes",
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Резюме, сгруппированные по возможности отклика на данную вакансию
+     * @param int $id
+     * @return array|null
+     */
+    public function getResumesByStatus(int $id): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            "/vacancies/$id/resumes_by_status",
+            [
+                'headers' => $this->getHeaders(),
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -85,7 +141,7 @@ class ApplicantClient
             '/dictionaries',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -108,7 +164,7 @@ class ApplicantClient
                     'per_page' => $per_page,
                     'page' => $page,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -126,7 +182,7 @@ class ApplicantClient
             "/resumes/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -144,7 +200,7 @@ class ApplicantClient
             "/resumes/$id",
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -152,17 +208,50 @@ class ApplicantClient
 
     /**
      * @param string $id
+     * @param array $options
      * @return array|null
      * @throws GuzzleException
      */
-    public function publishResume(string $id): ?array
+    public function publishResume(string $id, array $options = []): ?array
+    {
+        $params = [];
+        if (!empty($options)) {
+            foreach ($options as $k=>$v) {
+                $params[] = $k . '=' . $v;
+            }
+        }
+
+        $response = $this->http_client->request(
+            'POST',
+            "/resumes/$id/publish" . (!empty($params) ? '?' . implode('&',$params) : ''),
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @param int $vacancy_id
+     * @param string $resume_id
+     * @param string $message
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function createNegotiations(int $vacancy_id, string $resume_id, string $message): ?array
     {
         $response = $this->http_client->request(
             'POST',
-            "/resumes/$id/publish",
+            "/negotiations",
             [
                 'headers' => $this->getHeaders(),
-            ],
+                'form_params' => [
+                    'vacancy_id' => $vacancy_id,
+                    'resume_id' => $resume_id,
+                    'message' => $message,
+                ]
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -179,7 +268,24 @@ class ApplicantClient
             '/areas',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getProfessionalRoles(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/professional_roles',
+            [
+                'headers' => $this->getHeaders(),
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -196,7 +302,7 @@ class ApplicantClient
             '/resume_conditions',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -214,8 +320,8 @@ class ApplicantClient
             "/resumes/$id/conditions",
             [
                 'headers' => $this->getHeaders(),
-            ],
-            )->getBody()->getContents();
+            ]
+        )->getBody()->getContents();
 
         return json_decode($response, true);
     }
@@ -233,7 +339,7 @@ class ApplicantClient
             [
                 'headers' => $this->getHeaders(),
                 'body' => json_encode($resume),
-            ],
+            ]
         );
 
         return $response->getStatusCode() == 201;
@@ -241,11 +347,11 @@ class ApplicantClient
 
     /**
      * @param string $id
-     * @param array $resume
+     * @param Resume $resume
      * @return bool
      * @throws GuzzleException
      */
-    public function updateResume(string $id, array $resume): bool
+    public function updateResume(string $id, Resume $resume): bool
     {
         $response = $this->http_client->request(
             'PUT',
@@ -253,7 +359,7 @@ class ApplicantClient
             [
                 'headers' => $this->getHeaders(),
                 'body' => json_encode($resume),
-            ],
+            ]
         );
 
         return $response->getStatusCode() == 204;
@@ -276,7 +382,7 @@ class ApplicantClient
                     'per_page' => $per_page,
                     'page' => $page,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -293,7 +399,7 @@ class ApplicantClient
             '/artifacts/portfolio',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -318,7 +424,7 @@ class ApplicantClient
                     'description' => $description,
                     'file' => $file,
                 ]
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -335,7 +441,7 @@ class ApplicantClient
             '/specializations',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -352,7 +458,7 @@ class ApplicantClient
             '/languages',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -369,7 +475,7 @@ class ApplicantClient
             '/metro',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -386,7 +492,7 @@ class ApplicantClient
             '/locales',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -403,7 +509,7 @@ class ApplicantClient
             '/documents/applicant_agreement',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
@@ -420,10 +526,37 @@ class ApplicantClient
             '/documents/employer_agreement',
             [
                 'headers' => $this->getHeaders(),
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
+    }
+
+    /**
+     * Информация о соискателе
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMe(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/me',
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Установить заголовок HH-User-Agent
+     * @param $user_agent
+     */
+    public function setUserAgent($user_agent)
+    {
+        $this->user_agent = $user_agent;
     }
 
     /**
@@ -431,7 +564,10 @@ class ApplicantClient
      */
     private function getHeaders(): array
     {
-        return ['Authorization' => "Bearer $this->access_token"];
+        return [
+            'Authorization' => "Bearer $this->access_token",
+            'HH-User-Agent' => $this->user_agent
+        ];
     }
 
 }

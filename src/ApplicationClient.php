@@ -1,32 +1,36 @@
 <?php
 
-
 namespace HhClient;
-
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use UnexpectedValueException;
 
+/**
+ * ApplicationClient
+ * @property string $client_id
+ * @property string $client_secret
+ * @property Client $http_client
+ */
 class ApplicationClient
 {
     /**
      * @var string
      */
-    private $client_id;
+    protected $client_id;
     /**
      * @var string
      */
-    private $client_secret;
+    protected $client_secret;
     /**
      * @var Client
      */
-    private $http_client;
+    protected $http_client;
 
     /**
      * @var string|null
      */
-    private $application_token;
+    protected $application_token;
 
     /**
      * ApplicationClient constructor.
@@ -41,7 +45,7 @@ class ApplicationClient
         $this->application_token = $application_token;
 
         $this->http_client = new Client([
-            'base_uri' => 'https://api.hh.ru',
+            'base_uri' => 'https://api.hh.ru'
         ]);
     }
 
@@ -121,14 +125,37 @@ class ApplicationClient
             'POST',
             '/users',
             [
-                'headers' => [
-                    'Authorization' => "Bearer $this->application_token"
-                ],
+                'headers' => $this->getHeaders(),
                 'form_params' => $body,
-            ],
+            ]
         )->getBody()->getContents();
 
         return json_decode($response, true);
     }
 
+    /**
+     * Информация о приложении, проверка токена приложения
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMe(): ?array
+    {
+        $response = $this->http_client->request(
+            'GET',
+            '/me',
+            [
+                'headers' => $this->getHeaders(),
+            ]
+        )->getBody()->getContents();
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getHeaders(): array
+    {
+        return ['Authorization' => "Bearer $this->application_token"];
+    }
 }
